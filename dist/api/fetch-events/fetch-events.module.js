@@ -6,19 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.FetchEventsModule = void 0;
 const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("./prisma/prisma.service");
-const prisma_module_1 = require("./prisma/prisma.module");
-const fetch_events_module_1 = require("./api/fetch-events/fetch-events.module");
-let AppModule = class AppModule {
+const prisma_module_1 = require("../../prisma/prisma.module");
+const prisma_service_1 = require("../../prisma/prisma.service");
+const fetch_events_controller_1 = require("./fetch-events.controller");
+const fetch_events_service_1 = require("./fetch-events.service");
+let FetchEventsModule = class FetchEventsModule {
 };
-AppModule = __decorate([
+FetchEventsModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, fetch_events_module_1.FetchEventsModule],
-        controllers: [],
-        providers: [prisma_service_1.PrismaService],
+        imports: [prisma_module_1.PrismaModule],
+        controllers: [fetch_events_controller_1.FetchEventsController],
+        providers: [fetch_events_service_1.FetchEventsService, prisma_service_1.PrismaService],
     })
-], AppModule);
-exports.AppModule = AppModule;
-//# sourceMappingURL=app.module.js.map
+], FetchEventsModule);
+exports.FetchEventsModule = FetchEventsModule;
+//# sourceMappingURL=fetch-events.module.js.map

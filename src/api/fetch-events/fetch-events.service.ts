@@ -5,7 +5,7 @@ import { FetchEventsByTxHashDto } from "./dto/fetchEventsByTxHash.dto";
 @Injectable()
 export class FetchEventsService {
   constructor(private readonly prisma: PrismaService) {}
-  provider = new ethers.JsonRpcProvider("localhost:8545");
+  provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
 
   async validateTxHash(
     provider: ethers.JsonRpcProvider,
@@ -22,5 +22,8 @@ export class FetchEventsService {
   async fetchEventsByTxHash(dto: FetchEventsByTxHashDto) {
     const { txHash } = dto;
     const receipt = await this.validateTxHash(this.provider, txHash);
+    console.log(typeof receipt);
+    // console.log(typeof receipt);
+    console.log(1);
   }
 }
