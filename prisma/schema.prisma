@@ -9,3 +9,40 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+model contractInfo {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String   @unique
+  address   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model userBalanceHistory {
+  id        String   @id @default(cuid()) @map("_id")
+  address   String
+  balance   String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model swapEvent {
+  id          String @id @default(cuid()) @map("_id")
+  txHash      String @unique
+  sender      String
+  amount0In   String
+  amount1In   String
+  amount0Out  String
+  amount1Out  String
+  to          String
+  blockNumber String
+}
+
+model transferEvent {
+  id          String @id @default(cuid()) @map("_id")
+  txHash      String @unique
+  from        String
+  to          String
+  value       String
+  blockNumber String
+}
