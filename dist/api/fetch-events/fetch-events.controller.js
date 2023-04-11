@@ -21,12 +21,11 @@ let FetchEventsController = class FetchEventsController {
         this.fetchEventsService = fetchEventsService;
     }
     async getEvents(payload) {
-        console.log(payload);
-        return this.fetchEventsService.fetchEventsByTxHash(payload);
+        return this.fetchEventsService.fetchSwapEvent(payload);
     }
 };
 __decorate([
-    (0, common_1.Post)("post"),
+    (0, common_1.Post)("swap"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [fetchEventsByTxHash_dto_1.FetchEventsByTxHashDto]),

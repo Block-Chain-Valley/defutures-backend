@@ -13,10 +13,11 @@ exports.FetchEventsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const ethers_1 = require("ethers");
+const tokenBook = require("./data/tokenBook.json");
 let FetchEventsService = class FetchEventsService {
     constructor(prisma) {
         this.prisma = prisma;
-        this.provider = new ethers_1.ethers.JsonRpcProvider("http://127.0.0.1:8545");
+        this.provider = new ethers_1.providers.JsonRpcProvider("http://127.0.0.1:8545");
     }
     async validateTxHash(provider, txHash) {
         const receipt = await provider.getTransactionReceipt(txHash);
@@ -24,11 +25,39 @@ let FetchEventsService = class FetchEventsService {
             throw new common_1.BadRequestException(`Transaction with hash ${txHash} does not exist.`);
         return receipt;
     }
-    async fetchEventsByTxHash(dto) {
+    async fetchSwapEvent(dto) {
         const { txHash } = dto;
         const receipt = await this.validateTxHash(this.provider, txHash);
-        console.log(typeof receipt);
-        console.log(1);
+        console.log(receipt);
+        const swapPath = [];
+        const amountPath = [];
+        receipt.logs.map((i) => {
+            if (tokenBook[i.address.toString()] !== undefined) {
+                swapPath.push(tokenBook[i.address]);
+                amountPath.push(i.data);
+            }
+        });
+        const timestamp = await this.provider
+            .getBlock(receipt.blockNumber)
+            .then((block) => {
+            return block.timestamp * 1000;
+        });
+        const return_ = {
+            owner: receipt.from,
+            txHash: txHash,
+            blockNumber: receipt.blockNumber,
+            blockHash: receipt.blockHash,
+            timestamp: timestamp,
+            path: swapPath,
+            amountPath: amountPath,
+        };
+        console.log(return_);
+        this.saveSwapEvent(return_);
+    }
+    async saveSwapEvent(event) {
+        const newSwap = await this.prisma.swapEvent.create({
+            data: event,
+        });
     }
 };
 FetchEventsService = __decorate([

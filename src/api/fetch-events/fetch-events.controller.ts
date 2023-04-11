@@ -6,9 +6,9 @@ import { FetchEventsByTxHashDto } from "./dto/fetchEventsByTxHash.dto";
 export class FetchEventsController {
   constructor(private readonly fetchEventsService: FetchEventsService) {}
 
-  @Post("post")
+  @Post("swap")
   async getEvents(@Body() payload: FetchEventsByTxHashDto) {
-    console.log(payload);
-    return this.fetchEventsService.fetchEventsByTxHash(payload);
+    // console.log(payload);
+    return this.fetchEventsService.fetchSwapEvent(payload);
   }
 }

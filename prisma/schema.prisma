@@ -10,39 +10,93 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model contractInfo {
-  id        String   @id @default(cuid()) @map("_id")
-  name      String   @unique
-  address   String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Swap {
+  id          String    @id @default(cuid()) @map("_id") @db.ObjectId
+  createdAt   DateTime
+  account     String
+  logIndex    Int
+  txHash      String
+  blockNumber Int
+  verified    Boolean   @default(true)
+  fromTokenId String    @db.ObjectId
+  toTokenId   String    @db.ObjectId
+  fromToken   Token     @relation("swap_from", fields: [fromTokenId], references: [id])
+  toToken     Token     @relation("swap_to", fields: [toTokenId], references: [id])
+  fromAmount  String
+  toAmount    String
+  pairId      String    @db.ObjectId
+  pair        Pair      @relation(fields: [pairId], references: [id])
+  exchangeId  String    @db.ObjectId
+  exchange    Exchange? @relation(fields: [exchangeId], references: [id])
+
+  @@unique([txHash, logIndex])
+  @@index([account])
 }
 
-model userBalanceHistory {
-  id        String   @id @default(cuid()) @map("_id")
-  address   String
-  balance   String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Exchange {
+  id          String   @id @default(cuid()) @map("_id") @db.ObjectId
+  createdAt   DateTime
+  account     String
+  txHash      String   @unique
+  logIndex    Int //first logIndx of swap events
+  blockNumber Int
+  verified    Boolean  @default(true)
+  fromTokenId String   @db.ObjectId
+  toTokenId   String   @db.ObjectId
+  fromToken   Token    @relation("exchange_from", fields: [fromTokenId], references: [id])
+  toToken     Token    @relation("exchange_to", fields: [toTokenId], references: [id])
+  fromAmount  String
+  toAmount    String
+  events      Swap[]
+
+  @@unique([txHash, logIndex])
+  @@index([account])
 }
 
-model swapEvent {
-  id          String @id @default(cuid()) @map("_id")
-  txHash      String @unique
-  sender      String
-  amount0In   String
-  amount1In   String
-  amount0Out  String
-  amount1Out  String
-  to          String
-  blockNumber String
+model Token {
+  id           String     @id @default(cuid()) @map("_id") @db.ObjectId
+  address      String
+  name         String
+  symbol       String
+  decimals     Int        @default(18)
+  pair0        Pair[]     @relation("pair_token_0")
+  pair1        Pair[]     @relation("pair_token_1")
+  swapFrom     Swap[]     @relation("swap_from")
+  swapTo       Swap[]     @relation("swap_to")
+  exchangeFrom Exchange[] @relation("exchange_from")
+  exchangeTo   Exchange[] @relation("exchange_to")
+
+  @@unique([address])
 }
 
-model transferEvent {
-  id          String @id @default(cuid()) @map("_id")
-  txHash      String @unique
-  from        String
-  to          String
-  value       String
-  blockNumber String
+// model Transfer {
+//   id          String   @id @default(cuid()) @map("_id") @db.ObjectId
+//   createdAt   DateTime
+//   logIndex    Int
+//   txHash      String
+//   blockNumber Int
+//   verified    Boolean  @default(true)
+//   from        String
+//   to          String
+//   amount      String
+//   tokenId     String   @db.ObjectId
+//   token       Token    @relation(fields: [tokenId], references: [id])
+//   // exchange    Exchange? @relation(fields [exchangeId], references: [id])
+
+//   @@unique([txHash, logIndex])
+// }
+
+model Pair {
+  id      String @id @default(cuid()) @map("_id") @db.ObjectId
+  address String
+
+  token0Id String @db.ObjectId
+  token1Id String @db.ObjectId
+
+  token0 Token @relation("pair_token_0", fields: [token0Id], references: [id])
+  token1 Token @relation("pair_token_1", fields: [token1Id], references: [id])
+
+  events Swap[]
+
+  @@unique([address])
 }
