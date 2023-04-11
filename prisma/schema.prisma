@@ -10,61 +10,56 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Chain {
+  id             String   @id @default(cuid()) @map("_id") @db.ObjectId
+  chainId        Int
+  name           String
+  symbol         String
+  rpcUrl         String
+  tokens         Token[]
+  blockTime      Int
+  factoryAddress String
+  routerAddress  String
+  WETHAddress    String
+  pairId         String[] @db.ObjectId
+  pairs          Pair[]
+
+  @@unique([chainId])
+}
+
 model Swap {
-  id          String    @id @default(cuid()) @map("_id") @db.ObjectId
+  id          String   @id @default(cuid()) @map("_id") @db.ObjectId
   createdAt   DateTime
   account     String
   logIndex    Int
   txHash      String
   blockNumber Int
-  verified    Boolean   @default(true)
-  fromTokenId String    @db.ObjectId
-  toTokenId   String    @db.ObjectId
-  fromToken   Token     @relation("swap_from", fields: [fromTokenId], references: [id])
-  toToken     Token     @relation("swap_to", fields: [toTokenId], references: [id])
-  fromAmount  String
-  toAmount    String
-  pairId      String    @db.ObjectId
-  pair        Pair      @relation(fields: [pairId], references: [id])
-  exchangeId  String    @db.ObjectId
-  exchange    Exchange? @relation(fields: [exchangeId], references: [id])
-
-  @@unique([txHash, logIndex])
-  @@index([account])
-}
-
-model Exchange {
-  id          String   @id @default(cuid()) @map("_id") @db.ObjectId
-  createdAt   DateTime
-  account     String
-  txHash      String   @unique
-  logIndex    Int //first logIndx of swap events
-  blockNumber Int
   verified    Boolean  @default(true)
   fromTokenId String   @db.ObjectId
   toTokenId   String   @db.ObjectId
-  fromToken   Token    @relation("exchange_from", fields: [fromTokenId], references: [id])
-  toToken     Token    @relation("exchange_to", fields: [toTokenId], references: [id])
+  fromToken   Token    @relation("swap_from", fields: [fromTokenId], references: [id])
+  toToken     Token    @relation("swap_to", fields: [toTokenId], references: [id])
   fromAmount  String
   toAmount    String
-  events      Swap[]
+  pairId      String   @db.ObjectId
+  pair        Pair     @relation(fields: [pairId], references: [id])
 
   @@unique([txHash, logIndex])
   @@index([account])
 }
 
 model Token {
-  id           String     @id @default(cuid()) @map("_id") @db.ObjectId
-  address      String
-  name         String
-  symbol       String
-  decimals     Int        @default(18)
-  pair0        Pair[]     @relation("pair_token_0")
-  pair1        Pair[]     @relation("pair_token_1")
-  swapFrom     Swap[]     @relation("swap_from")
-  swapTo       Swap[]     @relation("swap_to")
-  exchangeFrom Exchange[] @relation("exchange_from")
-  exchangeTo   Exchange[] @relation("exchange_to")
+  id       String @id @default(cuid()) @map("_id") @db.ObjectId
+  chainId  Int
+  address  String
+  name     String
+  symbol   String
+  decimals Int    @default(18)
+  pair0    Pair[] @relation("pair_token_0")
+  pair1    Pair[] @relation("pair_token_1")
+  swapFrom Swap[] @relation("swap_from")
+  swapTo   Swap[] @relation("swap_to")
+  chain    Chain  @relation(fields: [chainId], references: [chainId])
 
   @@unique([address])
 }
@@ -96,7 +91,9 @@ model Pair {
   token0 Token @relation("pair_token_0", fields: [token0Id], references: [id])
   token1 Token @relation("pair_token_1", fields: [token1Id], references: [id])
 
-  events Swap[]
+  events  Swap[]
+  chainId String @db.ObjectId
+  chain   Chain  @relation(fields: [chainId], references: [id])
 
   @@unique([address])
 }

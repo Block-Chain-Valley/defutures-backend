@@ -9,6 +9,6 @@ export class FetchEventsController {
   @Post("swap")
   async getEvents(@Body() payload: FetchEventsByTxHashDto) {
     // console.log(payload);
-    return this.fetchEventsService.fetchSwapEvent(payload);
+    return this.fetchEventsService.fetchExchangeEvent(payload);
   }
 }

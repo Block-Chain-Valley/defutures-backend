@@ -29,29 +29,59 @@ export class FetchEventsService {
   async fetchExchangeEvent(dto: FetchEventsByTxHashDto) {
     const { txHash } = dto;
     const receipt = await this.validateTxHash(this.provider, txHash);
-
-    console.log(receipt);
-
-    receipt.logs.map((i) => {
-      if (swapBook[i.address] !== undefined) {
-        // add swap events
-        ///TODO Transfer Event들을 따로 저장? else if (transferBook[i.address] !== undefined) {
-        //   // add transfer Events
-        // }
-      }
-    });
     const timestamp = await this.provider
       .getBlock(receipt.blockNumber)
       .then((block) => {
         return block.timestamp * 1000;
       });
-    const return_ = {};
-    console.log(return_);
-    this.saveSwapEvent(return_);
-  }
-  async saveSwapEvent(event: SwapEvent) {
-    const newSwap = await this.prisma.swapEvent.create({
-      data: event,
+    console.log(receipt);
+    const swaps = [];
+    const transfers = [];
+
+    receipt.logs.map((i) => {
+      if (swapBook[i.address] !== undefined) {
+        swaps.push(i);
+      }
+      else if (transferBook[i.address] !== undefined){
+        transfers.push(i);
+      }
+    })
+    
+    receipt.logs.map((i) => {
+      console.log(i);
+      if (swapBook[i.address] !== undefined) {
+        // add swap events
+        ///TODO Transfer Event들을 따로 저장? else if (transferBook[i.address] !== undefined) {
+        //   // add transfer Events
+        // }
+        const swapEvent = {
+          createdAt: timestamp,
+          account: receipt.from,
+          logIndex: i.logIndex,
+          txHash: txHash,
+          blockNumber: receipt.blockNumber,
+          verified: true,
+          fromTokenId: {
+            connect: {
+              address: i.topics[1],
+            }
+          }
+          toTokenId:
+          fromAmount: i.data.slice(2+32, 2+32+32),
+          toAmount: i.data.slice(2+64, 2+64+32),
+          pairId: 
+          exchangeId:
+          
+        }
+      }
     });
+
+    const return_ = {};
   }
+
+  // async saveSwapEvent(event: SwapEvent) {
+  //   const newSwap = await this.prisma.swap.create({
+  //     data: event,
+  //   });
+  // }
 }

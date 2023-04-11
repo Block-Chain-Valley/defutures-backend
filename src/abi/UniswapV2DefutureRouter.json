@@ -1,19 +1,21 @@
 [
   {
-    "inputs": [
+    "inputs": [],
+    "name": "Defuture__Expired",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WETH",
+    "outputs": [
       {
         "internalType": "address",
-        "name": "router_",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "defutureFactory_",
+        "name": "",
         "type": "address"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -28,13 +30,18 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
-        "name": "baseAmount",
+        "name": "spotAmount",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "toleranceBps",
+        "name": "hedgeAmount",
         "type": "uint256"
       }
     ],
@@ -52,28 +59,66 @@
       },
       {
         "internalType": "address",
-        "name": "farm",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "baseAmount",
+        "name": "toleranceBps",
         "type": "uint256"
       }
     ],
-    "name": "addLiquidityWithBaseToken",
+    "name": "addLiquidityHedgedETH",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "positionId",
-        "type": "uint256"
-      },
       {
         "internalType": "uint256",
         "name": "swappedBaseAmount",
         "type": "uint256"
       }
     ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenA",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenB",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "buyA",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint112",
+        "name": "amountBuy",
+        "type": "uint112"
+      },
+      {
+        "internalType": "uint112",
+        "name": "margin",
+        "type": "uint112"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
+    "name": "addPosition",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -81,33 +126,37 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "buy",
+        "name": "token",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "sell",
+        "name": "to",
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "futureAmount",
-        "type": "uint256"
+        "internalType": "bool",
+        "name": "buyETH",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint112",
+        "name": "amountBuy",
+        "type": "uint112"
+      },
+      {
+        "internalType": "uint112",
+        "name": "margin",
+        "type": "uint112"
       },
       {
         "internalType": "uint256",
-        "name": "buyAmount",
+        "name": "deadline",
         "type": "uint256"
       }
     ],
-    "name": "addPositionWithBuyToken",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "margin",
-        "type": "uint256"
-      }
-    ],
+    "name": "addPositionETH",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -159,7 +208,51 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "swappedBaseAmount",
+        "name": "baseAmountToSwap",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "base",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "farm",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "spotAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "hedgeAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "getToleranceBps",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "toleranceBps",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reducedRewardBps",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "farmAmount",
         "type": "uint256"
       }
     ],
@@ -178,5 +271,9 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]
